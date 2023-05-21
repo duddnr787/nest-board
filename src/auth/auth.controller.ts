@@ -6,8 +6,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signUp')
+  @Post('/signup')
   signUp(@Body(ValidationPipe) createUserDto: CreateUserDto): Promise<void> {
     return this.authService.signUp(createUserDto);
+  }
+
+  @Post('/signin')
+  signIn(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.signIn(createUserDto);
   }
 }
