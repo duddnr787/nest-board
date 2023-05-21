@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UsePipes,
@@ -19,16 +20,11 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
 export class BoardsController {
   constructor(private boardService: BoardsService) {}
 
-  // @Get('/')
-  // getAllBoard(): Board[] {
-  //   return this.boardService.getAllboards();
-  // }
+  @Get()
+  getAllBoards(): Promise<Board[]> {
+    return this.boardService.getAllBoards();
+  }
 
-  // @Post()
-  // @UsePipes(ValidationPipe)
-  // createBoard(@Body() CreateBoardDto: CreateBoardDto): Board {
-  //   return this.boardService.createBoard(CreateBoardDto);
-  // }
   @Post()
   @UsePipes(ValidationPipe)
   createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
@@ -39,21 +35,20 @@ export class BoardsController {
   getBoardById(@Param('id') id: number): Promise<Board> {
     return this.boardService.getBoardById(id);
   }
-  // @Get('/:id')
-  // getBoardById(@Param('id') id: string): Board {
-  //   return this.boardService.getBoardById(id);
-  // }
 
-  // @Delete('/:id')
-  // deleteBoard(@Param('id') id: string) {
-  //   this.boardService.deleteBoard(id);
-  // }
+  @Delete('/:id')
+  //들어 오는 값이 무조건 int여야하기 때문에 파이프로 확실하게 유효성 검사를 해준다.
+  delete(@Param('id', ParseIntPipe) id: number) {
+    this.boardService.deleteBoard(id);
+  }
 
-  // @Patch('/:id/status')
-  // updateBoardStatus(
-  //   @Param('id') id: string,
-  //   @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  // ): Board {
-  //   return this.boardService.updateBoardStatus(id, status);
-  // }
+  @Patch('/:id/status')
+  //들어오는 id 값이 무조건 int여야하기 때문에 파이프로 확실하게 유효성 검사를 해준다.
+  //들어오는 status 값에 대한 파이프.
+  updateBoardStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+  ) {
+    return this.boardService.updateBoardStatus(id, status);
+  }
 }
