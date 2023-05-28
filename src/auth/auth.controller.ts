@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
+  Query,
   Req,
   UseGuards,
   ValidationPipe,
@@ -32,5 +35,11 @@ export class AuthController {
   @UseGuards(AuthGuard())
   test(@GetUser() user: User) {
     console.log('req', user);
+  }
+
+  @Get('/DupCheck.do')
+  dupCheck(@Query('email') email: string): Promise<boolean> {
+    console.log(email);
+    return this.authService.dupCheck(email);
   }
 }

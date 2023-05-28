@@ -20,13 +20,13 @@ export class AuthService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto): Promise<void> {
-    const { username, password } = createUserDto;
+    const { email, password } = createUserDto;
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = this.userRepository.create({
-      username,
+      email,
       password: hashedPassword,
     });
     try {
@@ -41,17 +41,26 @@ export class AuthService {
   }
 
   async signIn(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
-    const { username, password } = createUserDto;
-    const user = await this.userRepository.findOne({ username });
+    const { email, password } = createUserDto;
+    const user = await this.userRepository.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
       //유저 토큰 생성 ( 시크릿 + 페이로드 )
-      const payload = { username };
+      const payload = { email };
       const accessToken = await this.jwtService.sign(payload);
 
       return { accessToken };
     } else {
       throw new UnauthorizedException('login failed');
+    }
+  }
+
+  async dupCheck(email: string): Promise<boolean> {
+    const userEmail = await this.userRepository.findOne({ email });
+    if (userEmail === undefined) {
+      return false;
+    } else {
+      return true;
     }
   }
 }
