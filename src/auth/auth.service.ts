@@ -19,9 +19,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<void> {
+  async signUp(createUserDto: CreateUserDto): Promise<boolean> {
     const { email, password } = createUserDto;
-
+    //비크립트 사용해 비번 암호화 하기
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -31,11 +31,14 @@ export class AuthService {
     });
     try {
       await this.userRepository.save(user);
+      return true;
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Existing username');
+        return false;
       } else {
         throw new InternalServerErrorException();
+        return false;
       }
     }
   }
