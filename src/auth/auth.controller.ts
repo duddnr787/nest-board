@@ -24,11 +24,11 @@ export class AuthController {
     return this.authService.signUp(createUserDto);
   }
 
-  @Post('/signin')
-  signIn(
+  @Post('/login')
+  login(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string }> {
-    return this.authService.signIn(createUserDto);
+    return this.authService.login(createUserDto);
   }
 
   @Post('/test')
